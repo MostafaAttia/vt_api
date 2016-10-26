@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Api\V1\Transformers\PermissionsTransformer;
 use App\Permission;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Helpers;
@@ -16,6 +17,12 @@ class PermissionsController extends Controller
     public function __construct()
     {
         $this->middleware('api.auth');
+    }
+
+    public function getPermissions()
+    {
+        $perms = Permission::paginate(4);
+        return $this->response->paginator($perms, new PermissionsTransformer );
     }
 
     /**

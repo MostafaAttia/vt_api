@@ -15,8 +15,8 @@ $api->version('v1', function ($api) {
     $api->post('role/', 'App\Http\Controllers\RolesController@store');
     $api->post('attach/{user_id}/role/{role_name}/', 'App\Http\Controllers\UsersController@assignUserRole');
     $api->post('detach/{user_id}/role/{role_name}/', 'App\Http\Controllers\UsersController@detachUserRole');
-    $api->post('role/{role_name}/perm/{perm_name}', 'App\Http\Controllers\RolesController@attachRolePermission');
-    $api->post('role/{role_name}/perm/{perm_name}', 'App\Http\Controllers\RolesController@detachRolePermission');
+    $api->post('attach/{role_name}/perm/{perm_name}', 'App\Http\Controllers\RolesController@attachRolePermission');
+    $api->post('detach/{role_name}/perm/{perm_name}', 'App\Http\Controllers\RolesController@detachRolePermission');
     $api->put('role/{name}', 'App\Http\Controllers\RolesController@updateRole');
     $api->delete('role/{name}', 'App\Http\Controllers\RolesController@deleteRole');
 
@@ -29,6 +29,10 @@ $api->version('v1', function ($api) {
 
     // transformers test
     $api->get('users', 'App\Http\Controllers\UsersController@getUsers');
+    $api->get('perm', 'App\Http\Controllers\PermissionsController@getPermissions');
+
+
+
 
 
 

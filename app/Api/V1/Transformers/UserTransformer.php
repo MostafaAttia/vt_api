@@ -4,7 +4,6 @@ namespace App\Api\V1\Transformers;
 
 use League\Fractal\TransformerAbstract;
 use App\User;
-use App\Role;
 
 class UserTransformer extends TransformerAbstract
 {
@@ -12,6 +11,10 @@ class UserTransformer extends TransformerAbstract
     {
 
         $roles = $user->roles;
+
+//        $perms = $roles->perms();
+//        $user = User::with('roles.perms')->get();
+//        return $user;
 
         return [
             'name' => $user->name,
