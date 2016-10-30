@@ -24,6 +24,10 @@ elixir(function(mix) {
             'app.js'
         ], 'public/js/app.js');
 
+    mix.browserSync({
+        proxy: 'localhost:8000'
+    });
+
 });
 
 

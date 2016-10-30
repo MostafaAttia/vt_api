@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
 
@@ -16,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'image_id'
     ];
 
     /**
@@ -36,6 +37,31 @@ class User extends Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = \Hash::make($value);
+    }
+
+    public function roleName()
+    {
+        $roles = $this->roles;
+        $output = '';
+        foreach($roles as $role)
+        {
+            $output = $output . $role->name .', ';
+        }
+
+        return $output;
+//        $this->roles()->name;
+    }
+
+
+    public function getImagePath()
+    {
+        $image = Image::findOrFail($this->image_id);
+        return '/images/'. $image->path;
+    }
+
+    public function memberSince()
+    {
+        return Carbon::createFromTimeStamp(strtotime($this->created_at))->diffForHumans();
     }
 
 }

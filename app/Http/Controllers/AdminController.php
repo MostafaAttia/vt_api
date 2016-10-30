@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Image;
 use App\Role;
 use App\User;
 use Illuminate\Http\Request;
@@ -30,7 +31,8 @@ class AdminController extends Controller
             $q->where('name', 'admin');
         })->get();
 
-        return view('admin.index', compact('admins'));
+        return view('admin.index', compact('admins'))
+            ->with(['page_title'=> 'All Admins', 'page_description'=> 'Show, Edit, Update and Delete admins']);
     }
 
 
@@ -54,7 +56,9 @@ class AdminController extends Controller
     public function create()
     {
         //
-        return view('admin.create')->with(['page_title'=> 'Create Admin', 'page_description'=> 'create a new admin']);
+
+        return view('admin.create')
+            ->with(['page_title'=> 'Create Admin', 'page_description'=> 'create a new admin']);
     }
 
     /**
@@ -65,22 +69,33 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
+
         $this->validate($request, [
             'name'  => 'required',
             'email' => 'required|email|unique:users,email',
-            'password'  => 'required|min:6'
+            'password'  => 'required|min:6',
+            'image' => 'required|image|max:2048|mimes:jpeg,png,jpg',
+        ]);
+
+        if($image = $request->file('image')){
+
+            $imageName = $image->getClientOriginalName();
+            $image->move('images', $imageName);
+        }
+
+        $image = Image::create([
+            'path' => $imageName
         ]);
 
         $params = $request->only('name', 'email', 'password');
-        $name = $params['name'];
+        $params['image_id'] = $image->id;
 
-        User::create($request->all());
+        $user = User::create($params);
 
-        $user = User::where('name', $name)->first();
         $admin = Role::where('name', 'admin')->first();
         $user->attachRole($admin);
 
-        Session::flash('admin_created', 'Admin $name Created Successfully!');
+        Session::flash('admin_created', 'Admin Created Successfully!');
 
         return redirect('admin/create');
     }
@@ -104,7 +119,10 @@ class AdminController extends Controller
      */
     public function edit($id)
     {
-        //
+        $admin = User::findOrFail($id);
+
+        return view('admin.edit', compact('admin'))
+            ->with(['page_title'=> 'Edit Admin']);
     }
 
     /**
@@ -116,7 +134,27 @@ class AdminController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name'  => 'required',
+            'email' => 'required|email|unique:users,email'
+        ]);
+
+        $params = $request->only('name', 'email');
+        $name = $params['name'];
+
+        $user = User::findOrFail($id);
+
+        $user->update($request->all());
+
+//        User::update($request->all());
+
+//        $user = User::where('name', $name)->first();
+//        $admin = Role::where('name', 'admin')->first();
+//        $user->attachRole($admin);
+
+        Session::flash('admin_updated', 'Admin Updated Successfully!');
+
+        return redirect('admin/manage');
     }
 
     /**
@@ -127,6 +165,11 @@ class AdminController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        Session::flash('admin_deleted', 'Admin Deleted Successfully!');
+
+        return redirect('admin/manage');
     }
 }

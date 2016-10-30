@@ -28,6 +28,10 @@ Route::group(['prefix' => 'admin'], function() {
     Route::get('manage', 'AdminController@manageAdmins');
     Route::get('create', 'AdminController@create');
     Route::post('create', 'AdminController@store');
+    Route::get('edit/{user_id}', 'AdminController@edit');
+    Route::post('update/{user_id}', 'AdminController@update')->name('admin.update');
+    Route::delete('delete/{user_id}', 'AdminController@destroy');
+
 
 
 //    Route::get('/manage', ['middleware' => ['permission:manage-admins'], 'uses' => 'AdminController@manageAdmins']);
